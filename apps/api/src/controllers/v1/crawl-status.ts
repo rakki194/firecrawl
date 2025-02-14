@@ -120,7 +120,7 @@ export async function crawlStatusController(
     return res.status(404).json({ success: false, error: "Job not found" });
   }
 
-  if (sc.team_id !== req.auth.team_id) {
+  if (process.env.USE_DB_AUTHENTICATION === "true" && sc.team_id !== req.auth.team_id) {
     return res.status(403).json({ success: false, error: "Forbidden" });
   }
 
@@ -244,7 +244,7 @@ export async function crawlStatusController(
 
   let totalCount = jobIDs.length;
 
-  if (totalCount === 0) {
+  if (totalCount === 0 && process.env.USE_DB_AUTHENTICATION === "true") {
     const x = await supabase_service
       .from('firecrawl_jobs')
       .select('*', { count: 'exact', head: true })
