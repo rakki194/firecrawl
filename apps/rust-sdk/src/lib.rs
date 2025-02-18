@@ -62,7 +62,7 @@ impl FirecrawlApp {
         headers
     }
 
-    async fn handle_response<'a, T: DeserializeOwned>(
+    async fn handle_response<T: DeserializeOwned>(
         &self,
         response: Response,
         action: impl AsRef<str>,
@@ -72,15 +72,15 @@ impl FirecrawlApp {
         let response = response
             .text()
             .await
-            .map_err(|e| FirecrawlError::ResponseParseErrorText(e))
-            .and_then(|response_json| serde_json::from_str::<Value>(&response_json).map_err(|e| FirecrawlError::ResponseParseError(e)))
+            .map_err(FirecrawlError::ResponseParseErrorText)
+            .and_then(|response_json| serde_json::from_str::<Value>(&response_json).map_err(FirecrawlError::ResponseParseError))
             .and_then(|response_value| {
                 if response_value["success"].as_bool().unwrap_or(false) {
-                    Ok(serde_json::from_value::<T>(response_value).map_err(|e| FirecrawlError::ResponseParseError(e))?)
+                    Ok(serde_json::from_value::<T>(response_value).map_err(FirecrawlError::ResponseParseError)?)
                 } else {
                     Err(FirecrawlError::APIError(
                         action.as_ref().to_string(),
-                        serde_json::from_value(response_value).map_err(|e| FirecrawlError::ResponseParseError(e))?
+                        serde_json::from_value(response_value).map_err(FirecrawlError::ResponseParseError)?
                     ))
                 }
             });

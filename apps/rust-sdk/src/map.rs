@@ -52,7 +52,7 @@ impl FirecrawlApp {
 
         let response = self
             .client
-            .post(&format!("{}{}/map", self.api_url, API_VERSION))
+            .post(format!("{}{}/map", self.api_url, API_VERSION))
             .headers(headers)
             .json(&body)
             .send()

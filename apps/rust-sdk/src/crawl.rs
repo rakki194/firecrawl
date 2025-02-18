@@ -228,7 +228,7 @@ impl FirecrawlApp {
 
         let response = self
             .client
-            .post(&format!("{}{}/crawl", self.api_url, API_VERSION))
+            .post(format!("{}{}/crawl", self.api_url, API_VERSION))
             .headers(headers.clone())
             .json(&body)
             .send()
@@ -267,7 +267,7 @@ impl FirecrawlApp {
     pub async fn check_crawl_status(&self, id: impl AsRef<str>) -> Result<CrawlStatus, FirecrawlError> {
         let response = self
             .client
-            .get(&format!(
+            .get(format!(
                 "{}{}/crawl/{}",
                 self.api_url, API_VERSION, id.as_ref()
             ))
@@ -304,14 +304,16 @@ impl FirecrawlApp {
                     tokio::time::sleep(tokio::time::Duration::from_millis(poll_interval)).await;
                 }
                 CrawlStatusTypes::Failed => {
-                    break Err(FirecrawlError::CrawlJobFailed(format!(
-                        "Crawl job failed."
-                    ), status_data));
+                    break Err(FirecrawlError::CrawlJobFailed(
+                        "Crawl job failed.".to_string(),
+                        status_data
+                    ));
                 }
                 CrawlStatusTypes::Cancelled => {
-                    break Err(FirecrawlError::CrawlJobFailed(format!(
-                        "Crawl job was cancelled."
-                    ), status_data));
+                    break Err(FirecrawlError::CrawlJobFailed(
+                        "Crawl job was cancelled.".to_string(),
+                        status_data
+                    ));
                 }
             }
         }

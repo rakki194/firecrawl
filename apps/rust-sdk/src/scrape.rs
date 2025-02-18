@@ -124,7 +124,7 @@ impl FirecrawlApp {
 
         let response = self
             .client
-            .post(&format!("{}{}/scrape", self.api_url, API_VERSION))
+            .post(format!("{}{}/scrape", self.api_url, API_VERSION))
             .headers(headers)
             .json(&body)
             .send()
